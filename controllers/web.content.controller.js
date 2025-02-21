@@ -15,7 +15,7 @@ export const addWebsite = async (req, res) => {
 
     const newWebsite = await Website.create({ url, content });
 
-    const script = `<script src="https://your-deployed-chatbot.com/ChatbotWidget.jsx?websiteId=${newWebsite._id}"></script>`;
+    const script = `<script src="https://your-deployed-chatbot.com/widget.js?websiteId=${newWebsite._id}"></script>`;
     
     res.json({ script });
   } catch (error) {
