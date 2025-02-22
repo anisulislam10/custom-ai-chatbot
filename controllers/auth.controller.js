@@ -142,3 +142,34 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getUser = async (req, res) => {
+  try {
+    // Extract user ID from request params or JWT token
+    const userId = req.user?.id || req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    // Fetch user from the database (excluding password)
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "User fetched successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
