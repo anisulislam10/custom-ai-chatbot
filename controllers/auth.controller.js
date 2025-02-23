@@ -14,6 +14,7 @@ export const validateUser = [
 ];
 
 // 📌 Register User & Send Email Verification Link
+// 📌 Register User & Send Email Verification Link
 export const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -36,8 +37,25 @@ export const registerUser = async (req, res) => {
     // Construct Verification Link
     const verificationLink = `${process.env.FRONTEND_URL}/verify/${verificationToken}`;
 
-    // Send Email with Link
-    await sendEmail(email, "Verify Your Account", `Click here to verify your account: ${verificationLink}`);
+    // HTML Email Content
+    const htmlContent = `
+      <h2>Welcome to Anvobot!</h2>
+      <p>Click the button below to verify your account:</p>
+      <a href="${verificationLink}" style="
+        display: inline-block;
+        padding: 10px 20px;
+        margin-top: 10px;
+        color: white;
+        background-color: #007bff;
+        text-decoration: none;
+        border-radius: 5px;
+      ">Verify Your Account</a>
+      <p>If the button does not work, you can also click the link below:</p>
+      <p><a href="${verificationLink}">${verificationLink}</a></p>
+    `;
+
+    // Send Email
+    await sendEmail(email, "Verify Your Account", `Click here to verify your account: ${verificationLink}`, htmlContent);
 
     res.status(201).json({ message: "Verification link sent to email. Please verify your account." });
   } catch (error) {
@@ -47,26 +65,27 @@ export const registerUser = async (req, res) => {
 
 // 📌 Verify User (When They Click on Email Link)
 export const verifyUser = async (req, res) => {
-    try {
-      const { token } = req.params;
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  
-      const user = await User.findOne({ email: decoded.email });
-  
-      if (!user) return res.status(400).json({ message: "Invalid or expired token" });
-  
-      // Update & Save User
-      user.isVerified = true;
-      await user.save();
-  
-      console.log(`User ${user.email} verified successfully.`);
-  
-      res.send("<h2>Your account has been verified successfully!</h2>");
-    } catch (error) {
-      console.error("❌ Verification Error:", error);
-      res.status(500).json({ message: "Invalid or expired token" });
-    }
-  };
+  try {
+    const { token } = req.params;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ email: decoded.email });
+
+    if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+
+    // Update & Save User
+    user.isVerified = true;
+    await user.save();
+
+    console.log(`User ${user.email} verified successfully.`);
+
+    res.send("<h2>Your account has been verified successfully! You can now log in.</h2>");
+  } catch (error) {
+    console.error("❌ Verification Error:", error);
+    res.status(500).json({ message: "Invalid or expired token" });
+  }
+};
+
   
   
 

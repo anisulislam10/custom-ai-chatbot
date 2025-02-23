@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, text, html) => {
   try {
     const transporter = nodemailer.createTransport({
       service: process.env.EMAIL_SERVICE,
@@ -14,7 +14,8 @@ const sendEmail = async (to, subject, text) => {
       from: process.env.EMAIL_USER,
       to,
       subject,
-      text,
+      text, // Fallback for plain text clients
+      html, // HTML email content
     };
 
     await transporter.sendMail(mailOptions);
