@@ -35,7 +35,7 @@ export const registerUser = async (req, res) => {
     const newUser = await User.create({ name, email, password: hashedPassword, isVerified: false });
 
     // Construct Verification Link
-    const verificationLink = `${process.env.CLIENT_URL}/verify/${verificationToken}`;
+    const verificationLink = `https://custom-ai-chatbot-admin.vercel.app/api/auth/verify/${verificationToken}`;
 
     // HTML Email Content
     const htmlContent = `
