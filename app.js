@@ -9,12 +9,10 @@ import chatbotRoutes from './routes/chatbot.routes.js';
 dotenv.config();
 
 const app = express();
-app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5174", // Change this if needed
-    credentials: true, // Allows cookies (if required)
-  }));
+
 app.use(express.json());
 app.use(express.static("public")); // Serve static files like widget.js
+app.use(cors());
 
 
 //end points
