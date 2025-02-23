@@ -10,6 +10,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(express.static("public")); // Serve static files like widget.js
 app.use(cors());
 
 
