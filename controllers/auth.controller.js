@@ -165,8 +165,8 @@ export const resetPassword = async (req, res) => {
 
 export const getUser = async (req, res) => {
   try {
-    // Extract user ID from request params or JWT token
-    const userId = req.user?.id || req.params.id;
+    // Extract user ID from JWT token (preferred) or request params
+    const userId = req.user?._id || req.params.id;
 
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
@@ -182,7 +182,7 @@ export const getUser = async (req, res) => {
     res.status(200).json({
       message: "User fetched successfully",
       user: {
-        id: user._id,
+        id: user._id.toString(), // Convert ObjectId to string
         name: user.name,
         email: user.email,
         updatedAt: user.updatedAt,
