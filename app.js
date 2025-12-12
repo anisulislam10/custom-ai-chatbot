@@ -10,20 +10,21 @@ dotenv.config();
 
 const app = express();
 
+// Configure CORS
+const corsOptions = {
+  origin: 'https://anvobot-ai-web-agent.vercel.app',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static("public")); // Serve static files like widget.js
-app.use(cors());
 
-
-//end points
-app.use('/api/auth',authRoutes)
-app.use('/api/web',webcontentRoutes)
+// Endpoints
+app.use('/api/auth', authRoutes);
+app.use('/api/web', webcontentRoutes);
 app.use('/api/chatbot', chatbotRoutes);
-
-
-
-
-
 
 connectDB();
 
