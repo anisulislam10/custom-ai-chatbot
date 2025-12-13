@@ -10,9 +10,14 @@ dotenv.config();
 
 const app = express();
 
-// Configure CORS
+// Configure CORS - FIXED
 const corsOptions = {
-  origin: 'https://anvobot-ai-web-agent.vercel.app',
+  origin: [
+    'https://anvobot-ai-web-agent.vercel.app',
+    'https://anvobot-ai-web-agent-git-main-stagging.vercel.app',
+    'http://localhost:5173', // Add local development
+    'http://localhost:3000'  // Add local development
+  ],
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -25,7 +30,21 @@ app.use(express.static("public")); // Serve static files like widget.js
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
-    timestamp: new Date().toISOString() 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Anvobot AI Web Agent API',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      web: '/api/web',
+      chatbot: '/api/chatbot'
+    }
   });
 });
 
@@ -34,6 +53,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/web', webcontentRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal server error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
+});
+
 // Connect to DB (without blocking)
 connectDB().catch(err => {
   console.error('MongoDB connection error:', err);
@@ -41,11 +69,14 @@ connectDB().catch(err => {
 
 // CRITICAL: Remove app.listen() for Vercel deployment
 // Vercel will handle the server, so we only export the app
-
 export default app;
 
 // Optional: Keep app.listen() only for local development
 if (process.env.NODE_ENV === 'development' && !process.env.VERCEL) {
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Local server running on port ${PORT}`));
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode`);
+    console.log(`🌐 Local: http://localhost:${PORT}`);
+    console.log(`🔗 API base: http://localhost:${PORT}/api`);
+  });
 }
