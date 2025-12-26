@@ -15,6 +15,7 @@ const corsOptions = {
   origin: [
     'https://anvobot-ai-web-agent.vercel.app',
     'https://anvobot-ai-web-agent-git-main-stagging.vercel.app',
+    'https://anvobot.anisuldev.online',
     'http://localhost:5173', // Add local development
     'http://localhost:3000'  // Add local development
   ],
